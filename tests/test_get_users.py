@@ -1,7 +1,10 @@
 import json
+import os
 
 import requests
 from jsonschema.validators import validate
+
+from tests.conftest import resources_path
 
 
 def test_users_list_users():
@@ -107,9 +110,22 @@ def test_users_delayed_response_users():
 
 
 def test_users_schema():
-    with open('get_users_schema.json') as file:
+    with open(os.path.join(resources_path, 'get_users_schema.json')) as file:
         schema = json.loads(file.read())
 
     response = requests.get("https://reqres.in/api/users")
 
     validate(instance=response.json(), schema=schema)
+
+
+def test_users_create_user_schema():
+    with open(os.path.join(resources_path, 'get_users_create_user_schema.json')) as file:
+        schema = json.loads(file.read())
+
+    response = requests.post(
+        url="https://reqres.in/api/users",
+        data={'name': 'alex', 'job': 'tester'}
+    )
+
+    validate(instance=response.json(), schema=schema)
+

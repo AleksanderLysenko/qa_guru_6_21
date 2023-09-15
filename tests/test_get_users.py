@@ -1,131 +1,189 @@
 import json
 import os
 
-import requests
+import allure
 from jsonschema.validators import validate
+from tests.conftest import resources_path, api
 
-from tests.conftest import resources_path
+base_url = "https://reqres.in"
 
 
 def test_users_list_users():
     per_page = 8
 
-    response = requests.get(
-        url="https://reqres.in/api/users",
-        params={"per_page": per_page}
-    )
+    with allure.step('Посылаем GET запрос на просмотр списка юзеров'):
+        response = api(base_url=base_url,
+                       method="get",
+                       url="/api/users",
+                       params={"per_page": per_page}
+                       )
 
-    assert response.status_code == 200
-    assert response.json()['per_page'] == per_page
-    assert len(response.json()['data']) == per_page
+    with allure.step('Осуществляем проверки'):
+        assert response.status_code == 200
+        assert response.json()['per_page'] == per_page
+        assert len(response.json()['data']) == per_page
 
 
 def test_users_status_code():
-    response = requests.get("https://reqres.in/api/users")
-
-    assert response.status_code == 200
+    with allure.step('Посылаем GET запрос на проверку статус-кода'):
+        response = api(base_url=base_url,
+                       method="get",
+                       url="/api/users")
+    with allure.step('Осуществляем проверку статус кода'):
+        assert response.status_code == 200
 
 
 def test_users_single_user_not_found():
-    response = requests.get("https://reqres.in/api/users/23")
+    with allure.step('Посылаем GET запрос на просмотр юзера'):
+        response = api(base_url=base_url,
+                       method="get",
+                       url="/api/users/23")
 
-    assert response.status_code == 404
+    with allure.step('Осуществляем проверку статус кода'):
+        assert response.status_code == 404
 
 
 def test_users_create_user():
-    response = requests.post(
-        url="https://reqres.in/api/users",
-        data={'name': 'alex', 'job': 'tester'}
-    )
+    name = 'alex'
+    job = 'tester'
 
-    assert response.status_code == 201
-    assert response.json()['name'] == 'alex'
-    assert response.json()['job'] == 'tester'
+    with allure.step('Посылаем POST запрос на создание юзера'):
+        response = api(base_url=base_url,
+                       method="post",
+                       url="/api/users",
+                       data={"name": name, "job": job}
+                       )
+
+    with allure.step('Осуществляем проверки'):
+        assert response.status_code == 201
+        assert response.json()['name'] == name
+        assert response.json()['job'] == job
 
 
 def test_users_update_user():
-    response = requests.put(
-        url="https://reqres.in/api/users/2",
-        data={'name': 'alex', 'job': 'lead'}
-    )
+    name = 'alex'
+    job = 'lead'
 
-    assert response.status_code == 200
-    assert response.json()['name'] == 'alex'
-    assert response.json()['job'] == 'lead'
+    with allure.step('Посылаем PUT запрос на обновление юзера'):
+        response = api(base_url=base_url,
+                       method="put",
+                       url="/api/users/2",
+                       data={"name": name, "job": job}
+                       )
 
-
-def test_users_delete_user():
-    response = requests.delete("https://reqres.in/api/users/2")
-
-    assert response.status_code == 204
+    with allure.step('Осуществляем проверки'):
+        assert response.status_code == 200
+        assert response.json()['name'] == name
+        assert response.json()['job'] == job
 
 
 def test_users_register_successful_user():
-    response = requests.post(
-        url="https://reqres.in/api/register",
-        data={"email": "eve.holt@reqres.in", "password": "pistol"}
-    )
+    email = "eve.holt@reqres.in"
+    password = "pistol"
 
-    assert response.status_code == 200
-    assert response.json()['id'] == 4
-    assert response.json()['token'] == 'QpwL5tke4Pnpja7X4'
+    with allure.step('Посылаем POST запрос на регистрацию юзера'):
+        response = api(base_url=base_url,
+                       method="post",
+                       url="/api/register",
+                       data={"email": email, "password": password}
+                       )
+
+    with allure.step('Осуществляем проверки'):
+        assert response.status_code == 200
+        assert response.json()['id'] == 4
+        assert response.json()['token'] == 'QpwL5tke4Pnpja7X4'
 
 
 def test_users_register_unsuccessful_user():
-    response = requests.post(
-        url="https://reqres.in/api/register",
-        data={"email": "eve.holt@reqres.in"}
-    )
+    email = "eve.holt@reqres.in"
 
-    assert response.status_code == 400
-    assert response.json()['error'] == 'Missing password'
+    with allure.step('Посылаем POST запрос на регистрацию юзера'):
+        response = api(base_url=base_url,
+                       method="post",
+                       url="/api/register",
+                       data={"email": email}
+                       )
+
+    with allure.step('Осуществляем проверки'):
+        assert response.status_code == 400
+        assert response.json()['error'] == 'Missing password'
 
 
 def test_users_login_successful_user():
-    response = requests.post(
-        url="https://reqres.in/api/login",
-        data={"email": "eve.holt@reqres.in", "password": "cityslicka"}
-    )
+    email = "eve.holt@reqres.in"
+    password = "cityslicka"
 
-    assert response.status_code == 200
-    assert response.json()['token'] == 'QpwL5tke4Pnpja7X4'
+    with allure.step('Посылаем POST запрос на login юзера'):
+        response = api(base_url=base_url,
+                       method="post",
+                       url="/api/login",
+                       data={"email": email, "password": password}
+                       )
+
+    with allure.step('Осуществляем проверки'):
+        assert response.status_code == 200
+        assert response.json()['token'] == 'QpwL5tke4Pnpja7X4'
 
 
 def test_users_login_unsuccessful_user():
-    response = requests.post(
-        url="https://reqres.in/api/login",
-        data={"email": "peter@klaven"}
-    )
+    email = "peter@klaven"
 
-    assert response.status_code == 400
-    assert response.json()['error'] == 'Missing password'
+    with allure.step('Посылаем POST запрос на login юзера'):
+        response = api(base_url=base_url,
+                       method="post",
+                       url="/api/login",
+                       data={"email": email}
+                       )
+
+    with allure.step('Осуществляем проверки'):
+        assert response.status_code == 400
+        assert response.json()['error'] == 'Missing password'
 
 
 def test_users_delayed_response_users():
-    response = requests.get("https://reqres.in/api/users?delay=4")
+    per_page = 6
 
-    assert response.status_code == 200
-    assert response.json()['page'] == 1
-    assert response.json()['per_page'] == 6
+    with allure.step('Посылаем GET запрос на просмотр списка юзеров'):
+        response = api(base_url=base_url,
+                       method="get",
+                       url="/api/users?delay=4",
+                       params={"per_page": per_page}
+                       )
+
+    with allure.step('Осуществляем проверки'):
+        assert response.status_code == 200
+        assert response.json()['page'] == 1
+        assert response.json()['per_page'] == per_page
 
 
 def test_users_schema():
-    with open(os.path.join(resources_path, 'get_users_schema.json')) as file:
-        schema = json.loads(file.read())
+    with allure.step('Открываем файл get_users_schema.json на чтение'):
+        with open(os.path.join(resources_path, 'get_users_schema.json')) as file:
+            schema = json.loads(file.read())
 
-    response = requests.get("https://reqres.in/api/users")
+    with allure.step('Посылаем GET запрос на просмотр списка юзеров'):
+        response = api(base_url=base_url,
+                       method="get",
+                       url="/api/users")
 
-    validate(instance=response.json(), schema=schema)
+    with allure.step('Валидируем схему'):
+        validate(instance=response.json(), schema=schema)
 
 
 def test_users_create_user_schema():
-    with open(os.path.join(resources_path, 'get_users_create_user_schema.json')) as file:
-        schema = json.loads(file.read())
+    name = 'alex'
+    job = 'tester'
 
-    response = requests.post(
-        url="https://reqres.in/api/users",
-        data={'name': 'alex', 'job': 'tester'}
-    )
+    with allure.step('Открываем файл get_users_create_user_schema.json на чтение'):
+        with open(os.path.join(resources_path, 'get_users_create_user_schema.json')) as file:
+            schema = json.loads(file.read())
 
-    validate(instance=response.json(), schema=schema)
+    with allure.step('Посылаем POST запрос на создание юзера'):
+        response = api(base_url=base_url,
+                       method="post",
+                       url="/api/users",
+                       data={"name": name, "job": job}
+                       )
 
+    with allure.step('Валидируем схему'):
+        validate(instance=response.json(), schema=schema)

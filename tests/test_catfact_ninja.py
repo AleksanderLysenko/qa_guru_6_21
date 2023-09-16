@@ -1,14 +1,32 @@
-import allure
+import json
+import os
 
-from tests.conftest import api
+import allure
+from jsonschema.validators import validate
+from tests.conftest import api, resources_path
 
 base_url = "https://catfact.ninja"
 
 
-def test_users_status_code():
-    with allure.step('Посылаем GET запрос на проверку статус-кода'):
+def test_list_of_breeds():
+    with allure.step('Посылаем GET запрос на просмотр списка'):
         response = api(base_url=base_url,
                        method="get",
                        url="/breeds")
+
     with allure.step('Осуществляем проверку статус кода'):
         assert response.status_code == 200
+
+
+def test_list_of_breeds_schema():
+    with allure.step('Открываем файл get_list_of_breads_schema.json на чтение'):
+        with open(os.path.join(resources_path, 'get_list_of_breads_schema.json')) as file:
+            schema = json.loads(file.read())
+
+    with allure.step('Посылаем GET запрос на просмотр списка'):
+        response = api(base_url=base_url,
+                       method="get",
+                       url="/breads")
+
+    with allure.step('Валидируем схему'):
+        validate(instance=response.json(), schema=schema)

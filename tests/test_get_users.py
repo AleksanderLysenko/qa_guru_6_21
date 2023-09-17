@@ -8,7 +8,7 @@ from tests.conftest import resources_path, api
 base_url = "https://reqres.in"
 
 
-def test_users_list_users():
+def test_users_list_users(setup_browser):
     per_page = 8
 
     with allure.step('Посылаем GET запрос на просмотр списка юзеров'):
@@ -24,7 +24,7 @@ def test_users_list_users():
         assert len(response.json()['data']) == per_page
 
 
-def test_users_status_code():
+def test_users_status_code(setup_browser):
     with allure.step('Посылаем GET запрос на проверку статус-кода'):
         response = api(base_url=base_url,
                        method="get",
@@ -34,7 +34,7 @@ def test_users_status_code():
         assert response.status_code == 200
 
 
-def test_users_single_user_not_found():
+def test_users_single_user_not_found(setup_browser):
     with allure.step('Посылаем GET запрос на просмотр юзера'):
         response = api(base_url=base_url,
                        method="get",
@@ -44,7 +44,7 @@ def test_users_single_user_not_found():
         assert response.status_code == 404
 
 
-def test_users_create_user():
+def test_users_create_user(setup_browser):
     name = 'alex'
     job = 'tester'
 
@@ -61,7 +61,7 @@ def test_users_create_user():
         assert response.json()['job'] == job
 
 
-def test_users_update_user():
+def test_users_update_user(setup_browser):
     name = 'alex'
     job = 'lead'
 
@@ -78,7 +78,7 @@ def test_users_update_user():
         assert response.json()['job'] == job
 
 
-def test_users_delete_user():
+def test_users_delete_user(setup_browser):
     with allure.step('Посылаем DELETE запрос на удаление юзера'):
         response = api(base_url=base_url,
                        method="delete",
@@ -88,7 +88,7 @@ def test_users_delete_user():
         assert response.status_code == 204
 
 
-def test_users_register_successful_user():
+def test_users_register_successful_user(setup_browser):
     email = "eve.holt@reqres.in"
     password = "pistol"
 
@@ -105,7 +105,7 @@ def test_users_register_successful_user():
         assert response.json()['token'] == 'QpwL5tke4Pnpja7X4'
 
 
-def test_users_register_unsuccessful_user():
+def test_users_register_unsuccessful_user(setup_browser):
     email = "eve.holt@reqres.in"
 
     with allure.step('Посылаем POST запрос на регистрацию юзера'):
@@ -120,7 +120,7 @@ def test_users_register_unsuccessful_user():
         assert response.json()['error'] == 'Missing password'
 
 
-def test_users_login_successful_user():
+def test_users_login_successful_user(setup_browser):
     email = "eve.holt@reqres.in"
     password = "cityslicka"
 
@@ -136,7 +136,7 @@ def test_users_login_successful_user():
         assert response.json()['token'] == 'QpwL5tke4Pnpja7X4'
 
 
-def test_users_login_unsuccessful_user():
+def test_users_login_unsuccessful_user(setup_browser):
     email = "peter@klaven"
 
     with allure.step('Посылаем POST запрос на login юзера'):
@@ -151,7 +151,7 @@ def test_users_login_unsuccessful_user():
         assert response.json()['error'] == 'Missing password'
 
 
-def test_users_delayed_response_users():
+def test_users_delayed_response_users(setup_browser):
     per_page = 6
 
     with allure.step('Посылаем GET запрос на просмотр списка юзеров'):
@@ -167,7 +167,7 @@ def test_users_delayed_response_users():
         assert response.json()['per_page'] == per_page
 
 
-def test_users_schema():
+def test_users_schema(setup_browser):
     with allure.step('Открываем файл get_users_schema.json на чтение'):
         with open(os.path.join(resources_path, 'get_users_schema.json')) as file:
             schema = json.loads(file.read())
@@ -181,7 +181,7 @@ def test_users_schema():
         validate(instance=response.json(), schema=schema)
 
 
-def test_users_create_user_schema():
+def test_users_create_user_schema(setup_browser):
     name = 'alex'
     job = 'tester'
 

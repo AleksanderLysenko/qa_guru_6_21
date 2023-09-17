@@ -8,7 +8,7 @@ from tests.conftest import api, resources_path
 base_url = "https://catfact.ninja"
 
 
-def test_list_of_breeds():
+def test_list_of_breeds(setup_browser):
     with allure.step('Посылаем GET запрос на просмотр списка'):
         response = api(base_url=base_url,
                        method="get",
@@ -18,7 +18,7 @@ def test_list_of_breeds():
         assert response.status_code == 200
 
 
-def test_list_of_breeds_schema():
+def test_list_of_breeds_schema(setup_browser):
     with allure.step('Открываем файл get_list_of_breads_schema.json на чтение'):
         with open(os.path.join(resources_path, 'get_list_of_breads_schema.json')) as file:
             schema = json.loads(file.read())
@@ -32,7 +32,7 @@ def test_list_of_breeds_schema():
         validate(instance=response.json(), schema=schema)
 
 
-def test_get_random_fact():
+def test_get_random_fact(setup_browser):
     with allure.step('Посылаем GET запрос на выдачу рандомного факта'):
         response = api(base_url=base_url,
                        method="get",
@@ -42,7 +42,7 @@ def test_get_random_fact():
         assert response.status_code == 200
 
 
-def test_get_random_fact_schema():
+def test_get_random_fact_schema(setup_browser):
     with allure.step('Открываем файл get_random_fact_schema.json на чтение'):
         with open(os.path.join(resources_path, 'get_random_fact_schema.json')) as file:
             schema = json.loads(file.read())

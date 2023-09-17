@@ -1,6 +1,8 @@
-pytest
-requests
-jsonschema
+pytest~=7.4.2
+requests~=2.31.0
+jsonschema~=4.19.0
 selene==2.0.0rc4
 allure-pytest
-curlify
+curlify~=2.2.1
+python-dotenv==0.20.0
+selenium~=4.12.0

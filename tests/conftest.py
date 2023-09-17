@@ -8,6 +8,9 @@ from requests import sessions
 
 resources_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../resources'))
 
+token = os.getenv('TOKEN')
+chat_id = os.getenv('CHAT_ID')
+
 
 def base_url(url):
     return str(url)
@@ -29,16 +32,3 @@ def api(base_url, method, url, **kwargs):
                 allure.attach(body=message.encode("utf8"), name="Curl", attachment_type=AttachmentType.TEXT,
                               extension='txt')
     return response
-
-
-# def reqres_api_2(method, url, **kwargs):
-#     base_url = "https://reqres.in"
-#     new_url = base_url + url
-#     method = method.upper()
-#     with allure.step(f"{method} {url}"):
-#         with sessions.Session() as session:
-#             response = session.request(method=method, url=new_url, **kwargs)
-#             message = to_curl(response.request)
-#             allure.attach(body=message.encode("utf8"), name="Curl", attachment_type=AttachmentType.TEXT, extension='txt')
-#             allure.attach(body=json.dumps(response.json(), indent=4).encode("utf8"), name="Response Json", attachment_type=AttachmentType.JSON, extension='json')
-#     return response

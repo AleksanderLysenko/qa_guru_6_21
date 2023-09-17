@@ -29,6 +29,7 @@ def test_users_status_code():
         response = api(base_url=base_url,
                        method="get",
                        url="/api/users")
+
     with allure.step('Осуществляем проверку статус кода'):
         assert response.status_code == 200
 
@@ -75,6 +76,16 @@ def test_users_update_user():
         assert response.status_code == 200
         assert response.json()['name'] == name
         assert response.json()['job'] == job
+
+
+def test_users_delete_user():
+    with allure.step('Посылаем DELETE запрос на удаление юзера'):
+        response = api(base_url=base_url,
+                       method="delete",
+                       url="/api/users/2")
+
+    with allure.step('Осуществляем проверку'):
+        assert response.status_code == 204
 
 
 def test_users_register_successful_user():

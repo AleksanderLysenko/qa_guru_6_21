@@ -20,10 +20,14 @@ def api(base_url, method, url, **kwargs):
         with sessions.Session() as session:
             response = session.request(method=method, url=new_url, **kwargs)
             message = to_curl(response.request)
-            allure.attach(body=message.encode("utf8"), name="Curl", attachment_type=AttachmentType.TEXT,
-                          extension='txt')
-            allure.attach(body=json.dumps(response.json(), indent=4).encode("utf8"), name="Response Json",
-                          attachment_type=AttachmentType.JSON, extension='json')
+            if response.content:
+                allure.attach(body=json.dumps(response.json(), indent=4).encode("utf8"), name="Response Json",
+                              attachment_type=AttachmentType.JSON, extension='json')
+                allure.attach(body=message.encode("utf8"), name="Curl", attachment_type=AttachmentType.TEXT,
+                              extension='txt')
+            else:
+                allure.attach(body=message.encode("utf8"), name="Curl", attachment_type=AttachmentType.TEXT,
+                              extension='txt')
     return response
 
 
